@@ -1,0 +1,201 @@
+---
+title: "Analyzing HOBO Temperature Data"
+author: "Connor Flynn"
+date: "10/17/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(here)
+library(janitor)
+library(lubridate)
+library(plotly)
+```
+
+
+
+Read in HOBO temperature data
+
+```{r}
+bb_data <- read_csv(here("data/June_October_2022_Fishponds/BB_20970109.csv"))
+
+gg_data <- read_csv(here("data/June_October_2022_Fishponds/GG_20970122.csv"))
+  
+o_data <- read_csv(here("data/June_October_2022_Fishponds/O_20970093.csv"))
+  
+oyg_data <- read_csv(here("data/June_October_2022_Fishponds/OYG_20970123.csv"))
+  
+yg_data <- read_csv(here("data/June_October_2022_Fishponds/YG_20970107.csv"))
+  
+```
+
+
+
+
+
+Clean Column Names
+
+```{r}
+bb_data <- bb_data %>% 
+  clean_names
+
+gg_data <- gg_data %>% 
+  clean_names
+
+o_data <- o_data %>% 
+  clean_names
+
+oyg_data <- oyg_data %>% 
+  clean_names
+
+yg_data <- yg_data %>% 
+  clean_names
+
+
+```
+
+
+Merge Date and Time Columns
+
+```{r}
+bb_data$date_time = dmy_hms(paste(bb_data$date, bb_data$time))
+
+gg_data$date_time = dmy_hms(paste(gg_data$date, gg_data$time))
+
+o_data$date_time = dmy_hms(paste(o_data$date, o_data$time))
+
+oyg_data$date_time = dmy_hms(paste(oyg_data$date, oyg_data$time))
+
+yg_data$date_time = dmy_hms(paste(yg_data$date, yg_data$time))
+
+
+```
+
+
+Add Location Column
+
+```{r}
+bb_data$location = "bb"
+
+gg_data$location = "gg"
+
+o_data$location = "o"
+
+oyg_data$location = "oyg"
+
+yg_data$location = "yg"
+
+```
+
+
+Create a List of Dataframes to Join
+
+```{r}
+df_list <- list(bb_data, gg_data, o_data, oyg_data, yg_data)
+```
+
+
+
+Combine Dataframes in List
+
+```{r}
+all_data <- Reduce(function(x, y) merge(x, y, all=TRUE), df_list, accumulate=FALSE)
+```
+
+
+
+Plot Data
+
+```{r}
+ggplot(data = all_data, aes(x = date_time, y = temp_c_c_1, colour = location))+
+  geom_line() +
+  theme_minimal()
+
+
+
+```
+
+
+
+Trim ends 
+
+
+```{r}
+all_data_trimmed <- all_data[all_data$date_time > "2022-06-11" &    # Extract data frame subset
+                   all_data$date_time < "2022-10-5", ]
+```
+
+
+```{r}
+ggplot(data = all_data_trimmed, aes(x = date_time, y = temp_c_c_1, colour = location))+
+  geom_line() +
+  theme_minimal()
+```
+
+```{r}
+ggplot(data = all_data_trimmed, aes(x = date_time, y = temp_c_c_1, colour = location))+
+  geom_line() +
+  theme_minimal() + 
+  facet_wrap(~location)
+```
+
+```{r}
+plot <- ggplot(data = all_data_trimmed, aes(x = date_time, y = temp_c_c_1, colour = location))+
+  geom_line() +
+  theme_minimal() + 
+  facet_wrap(~location) +
+  geom_smooth(method = "lm")
+
+plot
+```
+
+```{r}
+ggplotly(plot)
+```
+
+
+
+Range
+
+```{r}
+all_data_trimmed_sep_date_time <- all_data_trimmed %>%
+  tidyr::separate('date_time',
+                  into = c('date_new', 'time_new'),
+                  sep= ' ',
+                  remove = FALSE)
+head(all_data_trimmed_sep_date_time)
+```
+
+
+```{r}
+all_data_trimmed_sep_date <- all_data_trimmed_sep_date_time %>%
+  tidyr::separate('date_new',
+                  into = c('year', 'month', 'day'),
+                  sep= '-',
+                  remove = FALSE)
+head(all_data_trimmed_sep_date)
+```
+
+```{r}
+all_data_range <- all_data_trimmed_sep_date %>%
+  group_by(year, month, day, location, date_new)%>%
+  summarise(min_temp = min(temp_c_c_1), max_temp = max(temp_c_c_1))%>%
+  mutate(range = max_temp-min_temp)
+
+head(all_data_range, digits=20)
+```
+
+```{r}
+range_plot <- ggplot(data=all_data_range, 
+                   aes(x=as.Date(date_new, format = "%Y - %m - %d"), 
+                       y=range, colour=location)) +
+  geom_smooth()+ theme_bw()+
+  theme(axis.text.x = element_text(margin = margin(t=5)))+
+  labs(title="Daily temperature range", y="Mean daily temperature range (°C) with 95% CI ", x="Date")
+
+range_plot
+```
+
+
