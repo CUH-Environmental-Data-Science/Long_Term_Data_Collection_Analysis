@@ -1,11 +1,12 @@
 ---
-title: "Analyzing HOBO Temperature Data"
+title: "Lab Version - Analyzing HOBO Tempo Data"
 author: "Connor Flynn"
-date: "10/17/2022"
+date: "10/19/2022"
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
+
 knitr::opts_chunk$set(echo = TRUE)
 
 #load libraries
@@ -21,11 +22,7 @@ librarian::shelf(tidyverse,
                 plotly,
                 RColorBrewer)
 
-
-
 ```
-
-
 
 Read in HOBO temperature data
 
@@ -35,12 +32,15 @@ bb_data <- read_csv(here("data/June_October_2022_Fishponds/BB_20970109.csv"))
 gg_data <- read_csv(here("data/June_October_2022_Fishponds/GG_20970122.csv"))
   
 o_data <- read_csv(here("data/June_October_2022_Fishponds/O_20970093.csv"))
-  
+
 oyg_data <- read_csv(here("data/June_October_2022_Fishponds/OYG_20970123.csv"))
   
-yg_data <- read_csv(here("data/June_October_2022_Fishponds/YG_20970107.csv"))
+# IN-LAB CODE
+
+# Here we have imported 4 of the 5 datasets into our environment. Can you use the code above to import the last remaining dataset from the "data/June_October_2022_Fishponds" folder?
   
 ```
+
 
 
 
@@ -68,6 +68,7 @@ yg_data <- yg_data %>%
 ```
 
 
+
 Merge Date and Time Columns
 
 ```{r}
@@ -85,6 +86,7 @@ yg_data$date_time = dmy_hms(paste(yg_data$date, yg_data$time))
 ```
 
 
+
 Add Location Column
 
 ```{r}
@@ -96,9 +98,14 @@ o_data$location = "o"
 
 oyg_data$location = "oyg"
 
-yg_data$location = "yg"
+# IN-LAB CODE
+
+# We have added location columns to 4 of the 5 dataframes. Can you use the code above to add a location column to the last remaining dataframe (yg_data)
+
+
 
 ```
+
 
 
 Create a List of Dataframes to Join
@@ -108,13 +115,11 @@ df_list <- list(bb_data, gg_data, o_data, oyg_data, yg_data)
 ```
 
 
-
 Combine Dataframes in List
 
 ```{r}
 all_data <- Reduce(function(x, y) merge(x, y, all=TRUE), df_list, accumulate=FALSE)
 ```
-
 
 
 Plot Data
@@ -145,12 +150,16 @@ ggplot(data = all_data_trimmed, aes(x = date_time, y = temp_c_c_1, colour = loca
   theme_minimal()
 ```
 
+Facet (separate) by Location
+
 ```{r}
 ggplot(data = all_data_trimmed, aes(x = date_time, y = temp_c_c_1, colour = location))+
   geom_line() +
   theme_minimal() + 
   facet_wrap(~location)
 ```
+
+Add Regression Lines
 
 ```{r}
 plot <- ggplot(data = all_data_trimmed, aes(x = date_time, y = temp_c_c_1, colour = location))+
@@ -162,13 +171,16 @@ plot <- ggplot(data = all_data_trimmed, aes(x = date_time, y = temp_c_c_1, colou
 plot
 ```
 
+
+Make Interactive with the Plotly Package
+
 ```{r}
 ggplotly(plot)
 ```
 
+Breakdown Dates and Times to take a Look at Range
 
-
-Range
+Seperate Date and Time Columns
 
 ```{r}
 all_data_trimmed_sep_date_time <- all_data_trimmed %>%
@@ -180,6 +192,8 @@ head(all_data_trimmed_sep_date_time)
 ```
 
 
+
+Separate Year, Month, and Day Columns
 ```{r}
 all_data_trimmed_sep_date <- all_data_trimmed_sep_date_time %>%
   tidyr::separate('date_new',
@@ -189,6 +203,9 @@ all_data_trimmed_sep_date <- all_data_trimmed_sep_date_time %>%
 head(all_data_trimmed_sep_date)
 ```
 
+
+Group Data to Find Daily Min and Max Temperatures for Range
+
 ```{r}
 all_data_range <- all_data_trimmed_sep_date %>%
   group_by(year, month, day, location, date_new)%>%
@@ -197,6 +214,9 @@ all_data_range <- all_data_trimmed_sep_date %>%
 
 head(all_data_range, digits=20)
 ```
+
+
+Plot Daily Temperature Ranges for Each Location
 
 ```{r}
 ggplot(data=all_data_range, 
