@@ -24,23 +24,37 @@ librarian::shelf(tidyverse,
 
 ```
 
+
+
+
+
+
+
+
+
+
 Read in HOBO temperature data
 
 ```{r}
-bb_data <- read_csv(here("data/June_October_2022_Fishponds/BB_20970109.csv"))
+Kalauhaihai_Makaha <- read_csv(here("BB_20970109.csv"))
 
-gg_data <- read_csv(here("data/June_October_2022_Fishponds/GG_20970122.csv"))
+KanewaiFishpondLedgeEdgeNorfolk <- read_csv(here("GG_20970122.csv"))
   
-o_data <- read_csv(here("data/June_October_2022_Fishponds/O_20970093.csv"))
+KanewaiSpringLedge <- read_csv(here("O_20970093.csv"))
+  
+KanewaiFishpondShade <- read_csv(here("OYG_20970123.csv"))
 
-oyg_data <- read_csv(here("data/June_October_2022_Fishponds/OYG_20970123.csv"))
-  
+
 # IN-LAB CODE
 
-# Here we have imported 4 of the 5 datasets into our environment. Can you use the code above to import the last remaining dataset from the "data/June_October_2022_Fishponds" folder?
+# Here we have imported 4 of the 5 datasets into our environment. Can you use the code above to import the last remaining dataset from the "data/" folder?
+
+# KanewaiAuwaiMakaiSideFootBridge = YG_20970107.csv
+
+  
+
   
 ```
-
 
 
 
@@ -49,70 +63,66 @@ oyg_data <- read_csv(here("data/June_October_2022_Fishponds/OYG_20970123.csv"))
 Clean Column Names
 
 ```{r}
-bb_data <- bb_data %>% 
+Kalauhaihai_Makaha <- Kalauhaihai_Makaha %>% 
   clean_names
 
-gg_data <- gg_data %>% 
+KanewaiFishpondLedgeEdgeNorfolk <- KanewaiFishpondLedgeEdgeNorfolk %>% 
   clean_names
 
-o_data <- o_data %>% 
+KanewaiSpringLedge <- KanewaiSpringLedge %>% 
   clean_names
 
-oyg_data <- oyg_data %>% 
+KanewaiFishpondShade <- KanewaiFishpondShade %>% 
   clean_names
 
-yg_data <- yg_data %>% 
+KanewaiAuwaiMakaiSideFootBridge <- KanewaiAuwaiMakaiSideFootBridge %>% 
   clean_names
 
 
 ```
-
 
 
 Merge Date and Time Columns
 
 ```{r}
-bb_data$date_time = dmy_hms(paste(bb_data$date, bb_data$time))
+Kalauhaihai_Makaha$date_time = dmy_hms(paste(Kalauhaihai_Makaha$date, Kalauhaihai_Makaha$time))
 
-gg_data$date_time = dmy_hms(paste(gg_data$date, gg_data$time))
+KanewaiFishpondLedgeEdgeNorfolk$date_time = dmy_hms(paste(KanewaiFishpondLedgeEdgeNorfolk$date, KanewaiFishpondLedgeEdgeNorfolk$time))
 
-o_data$date_time = dmy_hms(paste(o_data$date, o_data$time))
+KanewaiSpringLedge$date_time = dmy_hms(paste(KanewaiSpringLedge$date, KanewaiSpringLedge$time))
 
-oyg_data$date_time = dmy_hms(paste(oyg_data$date, oyg_data$time))
+KanewaiFishpondShade$date_time = dmy_hms(paste(KanewaiFishpondShade$date, KanewaiFishpondShade$time))
 
-yg_data$date_time = dmy_hms(paste(yg_data$date, yg_data$time))
+KanewaiAuwaiMakaiSideFootBridge$date_time = dmy_hms(paste(KanewaiAuwaiMakaiSideFootBridge$date, KanewaiAuwaiMakaiSideFootBridge$time))
 
 
 ```
-
 
 
 Add Location Column
 
 ```{r}
-bb_data$location = "bb"
+Kalauhaihai_Makaha$location = "Kalauhaihai_Makaha"
 
-gg_data$location = "gg"
+KanewaiFishpondLedgeEdgeNorfolk$location = "KanewaiFishpondLedgeEdgeNorfolk"
 
-o_data$location = "o"
+KanewaiSpringLedge$location = "KanewaiSpringLedge"
 
-oyg_data$location = "oyg"
+KanewaiFishpondShade$location = "KanewaiFishpondShade"
 
 # IN-LAB CODE
 
-# We have added location columns to 4 of the 5 dataframes. Can you use the code above to add a location column to the last remaining dataframe (yg_data)
-
-
+# We have added location columns to 4 of the 5 dataframes. Can you use the code above to add a location column to the last remaining dataframe (KanewaiAuwaiMakaiSideFootBridge)
 
 ```
-
 
 
 Create a List of Dataframes to Join
 
 ```{r}
-df_list <- list(bb_data, gg_data, o_data, oyg_data, yg_data)
+df_list <- list(Kalauhaihai_Makaha, KanewaiFishpondLedgeEdgeNorfolk, KanewaiSpringLedge, KanewaiFishpondShade, KanewaiAuwaiMakaiSideFootBridge)
 ```
+
 
 
 Combine Dataframes in List
@@ -120,6 +130,7 @@ Combine Dataframes in List
 ```{r}
 all_data <- Reduce(function(x, y) merge(x, y, all=TRUE), df_list, accumulate=FALSE)
 ```
+
 
 
 Plot Data
@@ -133,7 +144,7 @@ ggplot(data = all_data, aes(x = date_time, y = temp_c_c_1, colour = location))+
 
 ```
 
-
+# Lab Partner Discussion
 
 Trim ends 
 
@@ -150,7 +161,7 @@ ggplot(data = all_data_trimmed, aes(x = date_time, y = temp_c_c_1, colour = loca
   theme_minimal()
 ```
 
-Facet (separate) by Location
+
 
 ```{r}
 ggplot(data = all_data_trimmed, aes(x = date_time, y = temp_c_c_1, colour = location))+
@@ -159,7 +170,7 @@ ggplot(data = all_data_trimmed, aes(x = date_time, y = temp_c_c_1, colour = loca
   facet_wrap(~location)
 ```
 
-Add Regression Lines
+# Lab Partner Discussion
 
 ```{r}
 plot <- ggplot(data = all_data_trimmed, aes(x = date_time, y = temp_c_c_1, colour = location))+
@@ -171,16 +182,13 @@ plot <- ggplot(data = all_data_trimmed, aes(x = date_time, y = temp_c_c_1, colou
 plot
 ```
 
-
-Make Interactive with the Plotly Package
-
 ```{r}
 ggplotly(plot)
 ```
 
-Breakdown Dates and Times to take a Look at Range
+# Lab Partner Discussion
 
-Seperate Date and Time Columns
+Range
 
 ```{r}
 all_data_trimmed_sep_date_time <- all_data_trimmed %>%
@@ -192,8 +200,6 @@ head(all_data_trimmed_sep_date_time)
 ```
 
 
-
-Separate Year, Month, and Day Columns
 ```{r}
 all_data_trimmed_sep_date <- all_data_trimmed_sep_date_time %>%
   tidyr::separate('date_new',
@@ -203,9 +209,6 @@ all_data_trimmed_sep_date <- all_data_trimmed_sep_date_time %>%
 head(all_data_trimmed_sep_date)
 ```
 
-
-Group Data to Find Daily Min and Max Temperatures for Range
-
 ```{r}
 all_data_range <- all_data_trimmed_sep_date %>%
   group_by(year, month, day, location, date_new)%>%
@@ -214,9 +217,6 @@ all_data_range <- all_data_trimmed_sep_date %>%
 
 head(all_data_range, digits=20)
 ```
-
-
-Plot Daily Temperature Ranges for Each Location
 
 ```{r}
 ggplot(data=all_data_range, 
@@ -233,3 +233,4 @@ ggplot(data=all_data_range,
 ```
 
 
+# Lab Partner Discussion
