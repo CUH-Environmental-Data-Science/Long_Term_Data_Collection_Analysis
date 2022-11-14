@@ -30,15 +30,15 @@ librarian::shelf(tidyverse,
 Read in HOBO temperature data
 
 ```{r}
-bb_data <- read_csv(here("data/June_October_2022_Fishponds/BB_20970109.csv"))
+Kalauhaihai_Makaha <- read_csv(here("data/June_October_2022_Fishponds/BB_20970109.csv"))
 
-gg_data <- read_csv(here("data/June_October_2022_Fishponds/GG_20970122.csv"))
+KanewaiFishpondLedgeEdgeNorfolk <- read_csv(here("data/June_October_2022_Fishponds/GG_20970122.csv"))
   
-o_data <- read_csv(here("data/June_October_2022_Fishponds/O_20970093.csv"))
+KanewaiSpringLedge <- read_csv(here("data/June_October_2022_Fishponds/O_20970093.csv"))
   
-oyg_data <- read_csv(here("data/June_October_2022_Fishponds/OYG_20970123.csv"))
+KanewaiFishpondShade <- read_csv(here("data/June_October_2022_Fishponds/OYG_20970123.csv"))
   
-yg_data <- read_csv(here("data/June_October_2022_Fishponds/YG_20970107.csv"))
+KanewaiAuwaiMakaiSideFootBridge <- read_csv(here("data/June_October_2022_Fishponds/YG_20970107.csv"))
   
 ```
 
@@ -49,19 +49,19 @@ yg_data <- read_csv(here("data/June_October_2022_Fishponds/YG_20970107.csv"))
 Clean Column Names
 
 ```{r}
-bb_data <- bb_data %>% 
+Kalauhaihai_Makaha <- Kalauhaihai_Makaha %>% 
   clean_names
 
-gg_data <- gg_data %>% 
+KanewaiFishpondLedgeEdgeNorfolk <- KanewaiFishpondLedgeEdgeNorfolk %>% 
   clean_names
 
-o_data <- o_data %>% 
+KanewaiSpringLedge <- KanewaiSpringLedge %>% 
   clean_names
 
-oyg_data <- oyg_data %>% 
+KanewaiFishpondShade <- KanewaiFishpondShade %>% 
   clean_names
 
-yg_data <- yg_data %>% 
+KanewaiAuwaiMakaiSideFootBridge <- KanewaiAuwaiMakaiSideFootBridge %>% 
   clean_names
 
 
@@ -71,15 +71,15 @@ yg_data <- yg_data %>%
 Merge Date and Time Columns
 
 ```{r}
-bb_data$date_time = dmy_hms(paste(bb_data$date, bb_data$time))
+Kalauhaihai_Makaha$date_time = dmy_hms(paste(Kalauhaihai_Makaha$date, Kalauhaihai_Makaha$time))
 
-gg_data$date_time = dmy_hms(paste(gg_data$date, gg_data$time))
+KanewaiFishpondLedgeEdgeNorfolk$date_time = dmy_hms(paste(KanewaiFishpondLedgeEdgeNorfolk$date, KanewaiFishpondLedgeEdgeNorfolk$time))
 
-o_data$date_time = dmy_hms(paste(o_data$date, o_data$time))
+KanewaiSpringLedge$date_time = dmy_hms(paste(KanewaiSpringLedge$date, KanewaiSpringLedge$time))
 
-oyg_data$date_time = dmy_hms(paste(oyg_data$date, oyg_data$time))
+KanewaiFishpondShade$date_time = dmy_hms(paste(KanewaiFishpondShade$date, KanewaiFishpondShade$time))
 
-yg_data$date_time = dmy_hms(paste(yg_data$date, yg_data$time))
+KanewaiAuwaiMakaiSideFootBridge$date_time = dmy_hms(paste(KanewaiAuwaiMakaiSideFootBridge$date, KanewaiAuwaiMakaiSideFootBridge$time))
 
 
 ```
@@ -88,15 +88,15 @@ yg_data$date_time = dmy_hms(paste(yg_data$date, yg_data$time))
 Add Location Column
 
 ```{r}
-bb_data$location = "bb"
+Kalauhaihai_Makaha$location = "Kalauhaihai_Makaha"
 
-gg_data$location = "gg"
+KanewaiFishpondLedgeEdgeNorfolk$location = "KanewaiFishpondLedgeEdgeNorfolk"
 
-o_data$location = "o"
+KanewaiSpringLedge$location = "KanewaiSpringLedge"
 
-oyg_data$location = "oyg"
+KanewaiFishpondShade$location = "KanewaiFishpondShade"
 
-yg_data$location = "yg"
+KanewaiAuwaiMakaiSideFootBridge$location = "KanewaiAuwaiMakaiSideFootBridge"
 
 ```
 
@@ -104,7 +104,7 @@ yg_data$location = "yg"
 Create a List of Dataframes to Join
 
 ```{r}
-df_list <- list(bb_data, gg_data, o_data, oyg_data, yg_data)
+df_list <- list(Kalauhaihai_Makaha, KanewaiFishpondLedgeEdgeNorfolk, KanewaiSpringLedge, KanewaiFishpondShade, KanewaiAuwaiMakaiSideFootBridge)
 ```
 
 
